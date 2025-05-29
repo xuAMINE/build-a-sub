@@ -2,6 +2,7 @@ package com.delicious.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,6 +19,12 @@ public class Order {
     private Long id;
 
     private LocalDateTime orderTime;
+
+    @Column(name="customer_name", nullable=false)
+    private String customerName;
+
+//    @Column(name = "order_number", nullable = false, unique = true)
+//    private String orderNumber;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Sandwich> sandwiches;
@@ -40,4 +47,15 @@ public class Order {
                 .sum();
         return sandwichTotal + drinkTotal + chipTotal;
     }
+
+/*    @PrePersist
+    public void prePersist() {
+        // auto‐generate a UUID (or any scheme you like) if none supplied:
+        if (orderNumber == null || orderNumber.isBlank()) {
+            orderNumber = UUID.randomUUID().toString();
+        }
+        if (orderTime == null) {
+            orderTime = LocalDateTime.now();
+        }
+    }*/
 }

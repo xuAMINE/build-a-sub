@@ -22,6 +22,15 @@ public class Sandwich extends AbstractSandwich {
     private List<String> toppings;
 
     @Override
+    public double calculatePrice() {
+        // use the subclass's basePrice field + toppings cost
+        return basePrice
+                + toppings.stream()
+                .mapToDouble(t -> 0.5)
+                .sum();
+    }
+
+    @Override
     protected double additionalCost() {
         // example: $0.5 per topping
         return toppings.stream()

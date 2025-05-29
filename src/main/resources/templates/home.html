@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>DELI-cious Home</title>
+    <link rel="stylesheet" th:href="@{/static/css/style.css}" />
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+<h1>Welcome to DELI-cious</h1>
+<nav>
+    <a th:href="@{/orders}">Orders</a> |
+    <a th:href="@{/sandwiches}">Sandwiches</a>
+</nav>
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

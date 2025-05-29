@@ -10,6 +10,8 @@ import lombok.*;
 @Builder
 public class OrderDTO {
     private Long id;
+    private String customerName;
+//    private String orderNumber;
     private LocalDateTime orderTime;
     private List<SandwichDTO> sandwiches;
     private List<DrinkDTO> drinks;
