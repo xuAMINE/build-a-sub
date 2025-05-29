@@ -1,27 +1,30 @@
 package com.delicious.controller;
 
+import com.delicious.dto.ChipDTO;
+import com.delicious.dto.DrinkDTO;
 import com.delicious.dto.OrderDTO;
+import com.delicious.dto.SandwichDTO;
+import com.delicious.model.Chip;
+import com.delicious.model.Drink;
 import com.delicious.model.Order;
+import com.delicious.model.Sandwich;
 import com.delicious.service.OrderService;
 import com.delicious.util.EntityConverter;
 import jakarta.validation.Valid;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-import com.delicious.dto.*;
-import com.delicious.model.*;
 
 import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/api/orders")
-public class OrderRestController {
-
+@Controller
+@RequestMapping("/orders")
+public class OrderController {
     private final OrderService orderService;
     private final EntityConverter<Order, OrderDTO> converter;
 
-    public OrderRestController(OrderService orderService) {
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
         this.converter = new EntityConverter<>(
                 // Entity → DTO
@@ -89,33 +92,32 @@ public class OrderRestController {
         );
     }
 
+    @GetMapping("/new")
+    public String showCreateForm(Model model) {
+        // Initialize DTO with empty lists to avoid null pointers in the form preview
+        OrderDTO dto = new OrderDTO();
+        dto.setSandwiches(java.util.Collections.singletonList(new com.delicious.dto.SandwichDTO()));
+        dto.setDrinks(new java.util.ArrayList<>());
+        dto.setChips(new java.util.ArrayList<>());
+        model.addAttribute("orderDto", dto);
+        return "order/create";
+    }
+
     @PostMapping
-    public OrderDTO create(@RequestBody @Valid OrderDTO dto) {
-        var saved = orderService.placeOrder(converter.convertToEntity(dto));
-        return converter.convertToDto(saved);
-    }
+    public String submitOrder(@ModelAttribute("orderDto") @Valid OrderDTO dto,
+                              BindingResult bindingResult,
+                              Model model) {
+        if (bindingResult.hasErrors()) {
+            return "order/create";
+        }
+        // Ensure lists are not null to avoid NPE
+        if (dto.getSandwiches() == null) dto.setSandwiches(new java.util.ArrayList<>());
+        if (dto.getDrinks() == null) dto.setDrinks(new java.util.ArrayList<>());
+        if (dto.getChips() == null) dto.setChips(new java.util.ArrayList<>());
 
-    @GetMapping("/{id}")
-    public OrderDTO get(@PathVariable Long id) {
-        return converter.convertToDto(orderService.getOrderById(id));
-    }
-
-    @GetMapping
-    public List<OrderDTO> list() {
-        return orderService.getAllOrders()
-                .stream()
-                .map(converter::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    @PutMapping("/{id}")
-    public OrderDTO update(@PathVariable Long id, @RequestBody @Valid OrderDTO dto) {
-        var updated = orderService.update(id, converter.convertToEntity(dto));
-        return converter.convertToDto(updated);
-    }
-
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        orderService.delete(id);
+        Order saved = orderService.placeOrder(converter.convertToEntity(dto));
+        OrderDTO savedDto = converter.convertToDto(saved);
+        model.addAttribute("order", savedDto);
+        return "order/summary";
     }
 }

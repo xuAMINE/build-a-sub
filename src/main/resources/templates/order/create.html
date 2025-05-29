@@ -1,0 +1,134 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>New Order • DELI-cious</title>
+    <meta charset="UTF-8" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+<div th:replace="fragments/header :: header"></div>
+<main class="container mx-auto py-10 grid grid-cols-3 gap-8">
+    <form th:action="@{/orders}" th:object="${orderDto}" method="post" class="col-span-2 bg-white p-6 rounded-lg shadow space-y-6">
+        <h3 class="text-2xl font-semibold">Your Details</h3>
+        <div>
+            <label class="block mb-1">Name</label>
+            <input type="text" th:field="*{customerName}" placeholder="John Doe" class="w-full p-2 border rounded" />
+        </div>
+
+        <h3 class="text-2xl font-semibold">Sandwich</h3>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block mb-1">Bread Type</label>
+                <select th:field="*{sandwiches[0].breadType}" class="w-full p-2 border rounded">
+                    <option value="WHEAT">Wheat</option>
+                    <option value="WHITE">White</option>
+                    <option value="RYE">Rye</option>
+                    <option value="SOURDOUGH">Sourdough</option>
+                </select>
+            </div>
+            <div>
+                <label class="block mb-1">Size</label>
+                <select th:field="*{sandwiches[0].size}" class="w-full p-2 border rounded">
+                    <option value="FOUR_INCH">4"</option>
+                    <option value="EIGHT_INCH">8"</option>
+                    <option value="TWELVE_INCH">12"</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <label class="block mb-1">Meats</label>
+            <div class="grid grid-cols-3 gap-2">
+                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="STEAK"/> Steak</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="HAM"/> Ham</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="SALAMI"/> Salami</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="ROAST_BEEF"/> Roast Beef</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="CHICKEN"/> Chicken</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="BACON"/> Bacon</label>
+            </div>
+        </div>
+
+        <div>
+            <label class="block mb-1">Cheeses</label>
+            <div class="grid grid-cols-3 gap-2">
+                <label><input type="checkbox" th:field="*{sandwiches[0].cheeses}" value="AMERICAN"/> American</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].cheeses}" value="PROVOLONE"/> Provolone</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].cheeses}" value="CHEDDAR"/> Cheddar</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].cheeses}" value="SWISS"/> Swiss</label>
+            </div>
+        </div>
+
+        <div class="flex space-x-4">
+            <label><input type="checkbox" th:field="*{sandwiches[0].extraMeat}"/> Extra Meat</label>
+            <label><input type="checkbox" th:field="*{sandwiches[0].extraCheese}"/> Extra Cheese</label>
+        </div>
+
+        <div>
+            <label class="block mb-1">Regular Toppings</label>
+            <div class="grid grid-cols-3 gap-2">
+                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="LETTUCE"/> Lettuce</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="PEPPERS"/> Peppers</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="ONIONS"/> Onions</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="TOMATOES"/> Tomatoes</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="JALAPENOS"/> Jalapeños</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="CUCUMBERS"/> Cucumbers</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="PICKLES"/> Pickles</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="GUACAMOLE"/> Guacamole</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="MUSHROOMS"/> Mushrooms</label>
+            </div>
+        </div>
+
+        <div>
+            <label class="block mb-1">Sauces</label>
+            <div class="grid grid-cols-3 gap-2">
+                <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="MAYO"/> Mayo</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="MUSTARD"/> Mustard</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="KETCHUP"/> Ketchup</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="RANCH"/> Ranch</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="THOUSAND_ISLANDS"/> Thousand Islands</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="VINAIGRETTE"/> Vinaigrette</label>
+            </div>
+        </div>
+
+        <div>
+            <label class="block mb-1">Sides</label>
+            <div class="space-x-4">
+                <label><input type="checkbox" th:field="*{sandwiches[0].sides}" value="AU_JUS"/> Au Jus</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].sides}" value="SAUCE"/> Sauce</label>
+            </div>
+        </div>
+
+        <h3 class="text-2xl font-semibold">Drink</h3>
+        <select th:field="*{drinks[0].size}" class="w-full p-2 border rounded">
+            <option value="SMALL">Small</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="LARGE">Large</option>
+        </select>
+
+        <h3 class="text-2xl font-semibold">Chips</h3>
+        <input type="text" th:field="*{chips[0].type}" placeholder="e.g. Salted" class="w-full p-2 border rounded" />
+
+        <button type="submit" class="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Place Order</button>
+    </form>
+
+    <aside class="bg-white p-6 rounded-lg shadow space-y-4">
+        <h3 class="text-2xl font-semibold">Order Preview</h3>
+        <div th:each="sandwich : ${orderDto.sandwiches}" class="border-b pb-4">
+            <p class="font-semibold" th:text="${sandwich.breadType} + ' ' + ${sandwich.size}"></p>
+            <p th:text="'Meats: ' + ${sandwich.meats}"></p>
+            <p th:text="'Cheeses: ' + ${sandwich.cheeses}"></p>
+            <p th:text="'Extras: ' + (sandwich.extraMeat ? 'Extra Meat ' : '') + (sandwich.extraCheese ? 'Extra Cheese' : '')"></p>
+            <p th:text="'Toppings: ' + ${sandwich.regularToppings}"></p>
+            <p th:text="'Sauces: ' + ${sandwich.sauces}"></p>
+            <p th:text="'Sides: ' + ${sandwich.sides}"></p>
+            <p class="text-sm text-gray-600" th:text="${sandwich.price} + ' USD'"></p>
+        </div>
+        <div th:each="drink : ${orderDto.drinks}" class="border-b pb-2">
+            <p th:text="${drink.size} + ' Drink - ' + ${drink.price} + ' USD'"></p>
+        </div>
+        <div th:each="chip : ${orderDto.chips}" class="pb-2">
+            <p th:text="${chip.type} + ' Chips - ' + ${chip.price} + ' USD'"></p>
+        </div>
+        <hr />
+        <p class="text-xl font-bold" th:text="'Total: ' + ${orderDto.total} + ' USD'"></p>
+    </aside>
+</main>

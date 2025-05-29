@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<body>
-<div th:fragment="header">
-    <header>
-        <h1>DELI-cious</h1>
-        <hr />
-    </header>
+<div th:fragment="header" class="bg-red-600 text-white p-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-2xl font-bold">DELI-cious</h1>
+        <nav>
+            <a th:href="@{/}" class="px-4 hover:underline">Home</a>
+            <a th:href="@{/orders/new}" class="px-4 hover:underline">Order</a>
+        </nav>
+    </div>
 </div>
-</body>
-</html>
