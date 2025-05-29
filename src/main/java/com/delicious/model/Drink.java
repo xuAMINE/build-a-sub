@@ -1,20 +1,19 @@
 package com.delicious.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.delicious.model.enums.DrinkSize;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class Drink {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private double price;
+
+    @Enumerated(EnumType.STRING)
+    private DrinkSize size;
+
+    public double getPrice() {
+        return size.getPrice();
+    }
 }

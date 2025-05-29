@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class OrderRestController {
 
     private final OrderService orderService;
-    private final EntityConverter<Order,OrderDTO> converter;
+    private final EntityConverter<Order, OrderDTO> converter;
 
     public OrderRestController(OrderService orderService) {
         this.orderService = orderService;
@@ -28,28 +28,33 @@ public class OrderRestController {
                 order -> OrderDTO.builder()
                         .id(order.getId())
                         .customerName(order.getCustomerName())
-//                        .orderNumber(order.getOrderNumber())
                         .orderTime(order.getOrderTime())
                         .sandwiches(order.getSandwiches().stream()
                                 .map(s -> SandwichDTO.builder()
                                         .id(s.getId())
-                                        .name(s.getName())
-                                        .basePrice(s.getBasePrice())
-                                        .toppings(s.getToppings())
+                                        .breadType(s.getBreadType())
+                                        .size(s.getSize())
+                                        .meats(s.getMeats())
+                                        .cheeses(s.getCheeses())
+                                        .extraMeat(s.isExtraMeat())
+                                        .extraCheese(s.isExtraCheese())
+                                        .regularToppings(s.getRegularToppings())
+                                        .sauces(s.getSauces())
+                                        .sides(s.getSides())
                                         .price(s.calculatePrice())
                                         .build())
                                 .collect(Collectors.toList()))
                         .drinks(order.getDrinks().stream()
                                 .map(d -> DrinkDTO.builder()
                                         .id(d.getId())
-                                        .name(d.getName())
+                                        .size(d.getSize())
                                         .price(d.getPrice())
                                         .build())
                                 .collect(Collectors.toList()))
                         .chips(order.getChips().stream()
                                 .map(c -> ChipDTO.builder()
                                         .id(c.getId())
-                                        .name(c.getName())
+                                        .type(c.getType())
                                         .price(c.getPrice())
                                         .build())
                                 .collect(Collectors.toList()))
@@ -58,29 +63,42 @@ public class OrderRestController {
                 // DTO → Entity
                 dto -> Order.builder()
                         .customerName(dto.getCustomerName())
-//                        .orderNumber(dto.getOrderNumber())
-                        .orderTime(dto.getOrderTime())
                         .sandwiches(dto.getSandwiches().stream()
                                 .map(sdto -> Sandwich.builder()
-                                        .name(sdto.getName())
-                                        .basePrice(sdto.getBasePrice())
-                                        .toppings(sdto.getToppings())
+                                        .breadType(sdto.getBreadType())
+                                        .size(sdto.getSize())
+                                        .meats(sdto.getMeats())
+                                        .cheeses(sdto.getCheeses())
+                                        .extraMeat(sdto.isExtraMeat())
+                                        .extraCheese(sdto.isExtraCheese())
+                                        .regularToppings(sdto.getRegularToppings())
+                                        .sauces(sdto.getSauces())
+                                        .sides(sdto.getSides())
                                         .build())
                                 .collect(Collectors.toList()))
                         .drinks(dto.getDrinks().stream()
                                 .map(ddto -> Drink.builder()
-                                        .name(ddto.getName())
-                                        .price(ddto.getPrice())
+                                        .size(ddto.getSize())
                                         .build())
                                 .collect(Collectors.toList()))
                         .chips(dto.getChips().stream()
                                 .map(cdto -> Chip.builder()
-                                        .name(cdto.getName())
-                                        .price(cdto.getPrice())
+                                        .type(cdto.getType())
                                         .build())
                                 .collect(Collectors.toList()))
                         .build()
         );
+    }
+
+    @PostMapping
+    public OrderDTO create(@RequestBody @Valid OrderDTO dto) {
+        var saved = orderService.placeOrder(converter.convertToEntity(dto));
+        return converter.convertToDto(saved);
+    }
+
+    @GetMapping("/{id}")
+    public OrderDTO get(@PathVariable Long id) {
+        return converter.convertToDto(orderService.getOrderById(id));
     }
 
     @GetMapping
@@ -91,14 +109,14 @@ public class OrderRestController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/{id}")
-    public OrderDTO get(@PathVariable Long id) {
-        return converter.convertToDto(orderService.getOrderById(id));
+    @PutMapping("/{id}")
+    public OrderDTO update(@PathVariable Long id, @RequestBody @Valid OrderDTO dto) {
+        var updated = orderService.update(id, converter.convertToEntity(dto));
+        return converter.convertToDto(updated);
     }
 
-    @PostMapping
-    public OrderDTO create(@RequestBody @Valid OrderDTO dto) {
-        var saved = orderService.placeOrder(converter.convertToEntity(dto));
-        return converter.convertToDto(saved);
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        orderService.delete(id);
     }
 }

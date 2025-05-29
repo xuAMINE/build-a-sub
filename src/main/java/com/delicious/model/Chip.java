@@ -7,15 +7,11 @@ import jakarta.persistence.Id;
 import lombok.*;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class Chip {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private double price;
+    private String type;   // e.g. "Salted", "BBQ"
+    public double getPrice() { return 1.50; }
 }
 
