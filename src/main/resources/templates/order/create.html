@@ -183,22 +183,45 @@
     <aside class="bg-white p-6 rounded-lg shadow space-y-4">
         <h3 class="text-2xl font-bold text-red-600 border-b border-gray-200 pb-2">Order Preview</h3>
         <div class="border-b pb-4">
-            <p class="font-semibold" x-text="breadType + ' ' + size"></p>
-            <p x-text="'Meats: ' + meats.join(', ')"></p>
-            <p x-text="'Cheeses: ' + cheeses.join(', ')"></p>
-            <p x-text="'Extras: ' + (extraMeat ? 'Extra Meat ' : '') + (extraCheese ? 'Extra Cheese' : '')"></p>
-            <p x-text="'Toppings: ' + regularToppings.join(', ')"></p>
-            <p x-text="'Sauces: ' + sauces.join(', ')"></p>
-            <p x-text="'Sides: ' + sides.join(', ')"></p>
-            <p class="text-sm text-gray-600" x-text="sandwichPrice.toFixed(2) + ' USD'"></p>
-        </div>
-        <div class="border-b pb-2">
-            <p x-text="drinkSize ? (drinkSize + ' Drink - ' + drinkData[drinkSize].toFixed(2) + ' USD') : ''"></p>
+            <p class="font-semibold mb-4">
+                <span class="text-red-600">Bread:</span>
+                <span class="text-black text-sm" x-text="breadType + ' ' + size"></span>
+            </p>
+            <p class="font-semibold mb-4">
+                <span class="text-red-600">Meats:</span>
+                <span class="text-black text-sm" x-text="meats.join(', ')"></span>
+            </p>
+            <p class="font-semibold mb-4">
+                <span class="text-red-600">Cheeses:</span>
+                <span class="text-black text-sm" x-text="cheeses.join(', ')"></span>
+            </p>
+
+            <p class="font-semibold mb-4">
+                <span class="text-red-600">Extras:</span>
+                <span class="text-black text-sm"
+                      x-text="(extraMeat ? 'Extra Meat ' : '') + (extraCheese ? 'Extra Cheese' : '')">
+                </span>
+            </p>
+
+            <p class="font-semibold mb-4">
+                <span class="text-red-600">Toppings:</span>
+                <span class="text-black text-sm" x-text="regularToppings.join(', ')"></span>
+            </p>
+
+            <p class="font-semibold mb-4">
+                <span class="text-red-600">Sauces:</span>
+                <span class="text-black text-sm" x-text="sauces.join(', ')"></span>
+            </p>
+
+            <p class="font-semibold mb-4">
+                <span class="text-red-600">Sides:</span>
+                <span class="text-black text-sm" x-text="sides.join(', ')"></span>
+            </p>
         </div>
         <div class="pb-2">
             <p x-text="hasChips==='YES' ? ('Chips - ' + chipPrice.toFixed(2) + ' USD') : ''"></p>
         </div>
         <hr />
-        <p class="text-xl font-bold" x-text="'Total: ' + total.toFixed(2) + ' USD'"></p>
+        <p class="text-2xl font-bold text-gray-800" x-text="'Total: ' + total.toFixed(2) + ' USD'"></p>
     </aside>
 </main>
