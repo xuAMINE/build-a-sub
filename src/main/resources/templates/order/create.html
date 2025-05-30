@@ -1,24 +1,73 @@
-<html xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" x-data="orderApp()">
 <head>
     <title>New Order • DELI-cious</title>
     <meta charset="UTF-8" />
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50">
+<!-- Alpine.js state and methods -->
+<script>
+    function orderApp() {
+        return {
+            breadType: '',
+            size: '',
+            meats: [],
+            cheeses: [],
+            extraMeat: false,
+            extraCheese: false,
+            regularToppings: [],
+            sauces: [],
+            sides: [],
+            drinkSize: '',
+            hasChips: '',
+            sandwichPrice: 0,
+            total: 0,
+            chipPrice: 1.50,
+            sizeData: {
+                FOUR_INCH: { base:5.5, top:1, extraM:0.5, extraC:0.3 },
+                EIGHT_INCH: { base:7.0, top:2, extraM:1.0, extraC:0.6 },
+                TWELVE_INCH: { base:8.5, top:3, extraM:1.5, extraC:0.9 }
+            },
+            drinkData: { SMALL:2.00, MEDIUM:2.50, LARGE:3.00 },
+            updateSandwich() {
+                let d = this.sizeData[this.size] || { base:0, top:0, extraM:0, extraC:0 };
+                let price = d.base + this.meats.length * d.top + this.cheeses.length * d.top;
+                if (this.extraMeat) price += d.extraM;
+                if (this.extraCheese) price += d.extraC;
+                this.sandwichPrice = price;
+                this.updateTotal();
+            },
+            updateDrink() { this.updateTotal(); },
+            updateChips() { this.updateTotal(); },
+            updateTotal() {
+                let drinkP = this.drinkData[this.drinkSize] || 0;
+                let chipsP = this.hasChips === 'true' ? this.chipPrice : 0;
+                this.total = this.sandwichPrice + drinkP + chipsP;
+            }
+        }
+    }
+</script>
+
 <div th:replace="fragments/header :: header"></div>
 <main class="container mx-auto py-10 grid grid-cols-3 gap-8">
-    <form th:action="@{/orders}" th:object="${orderDto}" method="post" class="col-span-2 bg-white p-6 rounded-lg shadow space-y-6">
-        <h3 class="text-2xl font-semibold">Your Details</h3>
+    <form @change="updateSandwich(); updateDrink(); updateChips()" th:action="@{/orders}" th:object="${orderDto}" method="post" class="col-span-2 bg-white p-6 rounded-lg shadow space-y-6">
+
+        <!-- Customer Name -->
         <div>
             <label class="block mb-1">Name</label>
-            <input type="text" th:field="*{customerName}" placeholder="John Doe" class="w-full p-2 border rounded" />
+            <input x-model="orderDto.customerName" type="text" th:field="*{customerName}"
+                   placeholder="John Doe" class="w-full p-2 border rounded" />
         </div>
 
-        <h3 class="text-2xl font-semibold">Sandwich</h3>
+        <!-- Sandwich Options -->
+        <h3 class="text-2xl font-bold text-red-600 border-b-2 border-red-600 pb-2">Sandwich</h3>
         <div class="grid grid-cols-2 gap-4">
             <div>
-                <label class="block mb-1">Bread Type</label>
-                <select th:field="*{sandwiches[0].breadType}" class="w-full p-2 border rounded">
+                <label>Bread Type</label>
+                <select x-model="breadType" th:field="*{sandwiches[0].breadType}"
+                        class="w-full p-2 border rounded">
                     <option value="WHEAT">Wheat</option>
                     <option value="WHITE">White</option>
                     <option value="RYE">Rye</option>
@@ -26,109 +75,130 @@
                 </select>
             </div>
             <div>
-                <label class="block mb-1">Size</label>
-                <select th:field="*{sandwiches[0].size}" class="w-full p-2 border rounded">
+                <label>Size</label>
+                <select x-model="size" th:field="*{sandwiches[0].size}"
+                        class="w-full p-2 border rounded">
                     <option value="FOUR_INCH">4"</option>
                     <option value="EIGHT_INCH">8"</option>
                     <option value="TWELVE_INCH">12"</option>
                 </select>
             </div>
         </div>
-
+        <!-- Meats -->
         <div>
-            <label class="block mb-1">Meats</label>
+            <label>Meats</label>
             <div class="grid grid-cols-3 gap-2">
-                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="STEAK"/> Steak</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="HAM"/> Ham</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="SALAMI"/> Salami</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="ROAST_BEEF"/> Roast Beef</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="CHICKEN"/> Chicken</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="BACON"/> Bacon</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="STEAK" x-model="meats"/> Steak</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="HAM" x-model="meats"/> Ham</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="SALAMI" x-model="meats"/> Salami</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="ROAST_BEEF" x-model="meats"/> Roast Beef</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="CHICKEN" x-model="meats"/> Chicken</label>
+                <label><input type="checkbox" th:field="*{sandwiches[0].meats}" value="BACON" x-model="meats"/> Bacon</label>
             </div>
         </div>
-
+        <!-- Cheeses -->
         <div>
-            <label class="block mb-1">Cheeses</label>
             <div class="grid grid-cols-3 gap-2">
-                <label><input type="checkbox" th:field="*{sandwiches[0].cheeses}" value="AMERICAN"/> American</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].cheeses}" value="PROVOLONE"/> Provolone</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].cheeses}" value="CHEDDAR"/> Cheddar</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].cheeses}" value="SWISS"/> Swiss</label>
+                <div>
+                    <label>Cheeses</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label><input type="checkbox" th:field="*{sandwiches[0].cheeses}" value="AMERICAN" x-model="cheeses"/> American</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].cheeses}" value="PROVOLONE" x-model="cheeses"/> Provolone</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].cheeses}" value="CHEDDAR" x-model="cheeses"/> Cheddar</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].cheeses}" value="SWISS" x-model="cheeses"/> Swiss</label>
+                    </div>
+                </div>
             </div>
         </div>
-
+        <!-- Extras -->
         <div class="flex space-x-4">
-            <label><input type="checkbox" th:field="*{sandwiches[0].extraMeat}"/> Extra Meat</label>
-            <label><input type="checkbox" th:field="*{sandwiches[0].extraCheese}"/> Extra Cheese</label>
+            <label><input type="checkbox" x-model="extraMeat"
+                          th:field="*{sandwiches[0].extraMeat}" /> Extra Meat</label>
+            <label><input type="checkbox" x-model="extraCheese"
+                          th:field="*{sandwiches[0].extraCheese}" /> Extra Cheese</label>
         </div>
-
+        <!-- Regular Toppings -->
         <div>
-            <label class="block mb-1">Regular Toppings</label>
             <div class="grid grid-cols-3 gap-2">
-                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="LETTUCE"/> Lettuce</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="PEPPERS"/> Peppers</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="ONIONS"/> Onions</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="TOMATOES"/> Tomatoes</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="JALAPENOS"/> Jalapeños</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="CUCUMBERS"/> Cucumbers</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="PICKLES"/> Pickles</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="GUACAMOLE"/> Guacamole</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="MUSHROOMS"/> Mushrooms</label>
+                <div>
+                    <label>Regular Toppings</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="LETTUCE" x-model="regularToppings"/> Lettuce</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="PEPPERS" x-model="regularToppings"/> Peppers</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="ONIONS" x-model="regularToppings"/> Onions</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="TOMATOES" x-model="regularToppings"/> Tomatoes</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="JALAPENOS" x-model="regularToppings"/> Jalapeños</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="CUCUMBERS" x-model="regularToppings"/> Cucumbers</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="PICKLES" x-model="regularToppings"/> Pickles</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="GUACAMOLE" x-model="regularToppings"/> Guacamole</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].regularToppings}" value="MUSHROOMS" x-model="regularToppings"/> Mushroom</label>
+
+                    </div>
+                </div>
             </div>
         </div>
-
+        <!-- Sauces -->
         <div>
-            <label class="block mb-1">Sauces</label>
             <div class="grid grid-cols-3 gap-2">
-                <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="MAYO"/> Mayo</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="MUSTARD"/> Mustard</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="KETCHUP"/> Ketchup</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="RANCH"/> Ranch</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="THOUSAND_ISLANDS"/> Thousand Islands</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="VINAIGRETTE"/> Vinaigrette</label>
+                <div>
+                    <label>Sauces</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="MAYO" x-model="sauces"/> Mayo</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="MUSTARD" x-model="sauces"/> Mustard</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="KETCHUP" x-model="sauces"/> Ketchup</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="RANCH" x-model="sauces"/> Ranch</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="THOUSAND_ISLANDS" x-model="sauces"/> Thousand Islands</label>
+                        <label><input type="checkbox" th:field="*{sandwiches[0].sauces}" value="VINAIGRETTE" x-model="sauces"/> Vinaigrette</label>
+                    </div>
+                </div>
             </div>
         </div>
-
+        <!-- Sides -->
         <div>
-            <label class="block mb-1">Sides</label>
+            <label>Sides</label>
             <div class="space-x-4">
-                <label><input type="checkbox" th:field="*{sandwiches[0].sides}" value="AU_JUS"/> Au Jus</label>
-                <label><input type="checkbox" th:field="*{sandwiches[0].sides}" value="SAUCE"/> Sauce</label>
+                <label><input type="checkbox" x-model="sides" value="AU_JUS"
+                              th:field="*{sandwiches[0].sides}" /> Au Jus</label>
+                <label><input type="checkbox" x-model="sides" value="SAUCE"
+                              th:field="*{sandwiches[0].sides}" /> Sauce</label>
             </div>
         </div>
-
-        <h3 class="text-2xl font-semibold">Drink</h3>
-        <select th:field="*{drinks[0].size}" class="w-full p-2 border rounded">
+        <!-- Drink -->
+        <h3>Drink</h3>
+        <select x-model="drinkSize" th:field="*{drinks[0].size}" class="w-full p-2 border rounded mb-4">
             <option value="SMALL">Small</option>
             <option value="MEDIUM">Medium</option>
             <option value="LARGE">Large</option>
         </select>
-
-        <h3 class="text-2xl font-semibold">Chips</h3>
-        <input type="text" th:field="*{chips[0].type}" placeholder="e.g. Salted" class="w-full p-2 border rounded" />
-
+        <!-- Chips -->
+        <h3>Chips</h3>
+        <select x-model="hasChips" th:field="*{chips[0].type}" class="w-full p-2 border rounded">
+            <option value="">None</option>
+            <option value="YES">Yes</option>
+        </select>
+        <!-- Submit -->
         <button type="submit" class="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Place Order</button>
     </form>
 
     <aside class="bg-white p-6 rounded-lg shadow space-y-4">
-        <h3 class="text-2xl font-semibold">Order Preview</h3>
-        <div th:each="sandwich : ${orderDto.sandwiches}" class="border-b pb-4">
-            <p class="font-semibold" th:text="${sandwich.breadType} + ' ' + ${sandwich.size}"></p>
-            <p th:text="'Meats: ' + ${sandwich.meats}"></p>
-            <p th:text="'Cheeses: ' + ${sandwich.cheeses}"></p>
-            <p th:text="'Extras: ' + (sandwich.extraMeat ? 'Extra Meat ' : '') + (sandwich.extraCheese ? 'Extra Cheese' : '')"></p>
-            <p th:text="'Toppings: ' + ${sandwich.regularToppings}"></p>
-            <p th:text="'Sauces: ' + ${sandwich.sauces}"></p>
-            <p th:text="'Sides: ' + ${sandwich.sides}"></p>
-            <p class="text-sm text-gray-600" th:text="${sandwich.price} + ' USD'"></p>
+        <h3 class="text-2xl font-bold text-red-600 border-b border-gray-200 pb-2">Order Preview</h3>
+        <div class="border-b pb-4">
+            <p class="font-semibold" x-text="breadType + ' ' + size"></p>
+            <p x-text="'Meats: ' + meats.join(', ')"></p>
+            <p x-text="'Cheeses: ' + cheeses.join(', ')"></p>
+            <p x-text="'Extras: ' + (extraMeat ? 'Extra Meat ' : '') + (extraCheese ? 'Extra Cheese' : '')"></p>
+            <p x-text="'Toppings: ' + regularToppings.join(', ')"></p>
+            <p x-text="'Sauces: ' + sauces.join(', ')"></p>
+            <p x-text="'Sides: ' + sides.join(', ')"></p>
+            <p class="text-sm text-gray-600" x-text="sandwichPrice.toFixed(2) + ' USD'"></p>
         </div>
-        <div th:each="drink : ${orderDto.drinks}" class="border-b pb-2">
-            <p th:text="${drink.size} + ' Drink - ' + ${drink.price} + ' USD'"></p>
+        <div class="border-b pb-2">
+            <p x-text="drinkSize ? (drinkSize + ' Drink - ' + drinkData[drinkSize].toFixed(2) + ' USD') : ''"></p>
         </div>
-        <div th:each="chip : ${orderDto.chips}" class="pb-2">
-            <p th:text="${chip.type} + ' Chips - ' + ${chip.price} + ' USD'"></p>
+        <div class="pb-2">
+            <p x-text="hasChips==='YES' ? ('Chips - ' + chipPrice.toFixed(2) + ' USD') : ''"></p>
         </div>
         <hr />
-        <p class="text-xl font-bold" th:text="'Total: ' + ${orderDto.total} + ' USD'"></p>
+        <p class="text-xl font-bold" x-text="'Total: ' + total.toFixed(2) + ' USD'"></p>
     </aside>
 </main>

@@ -23,9 +23,6 @@ public class Order {
     @Column(name="customer_name", nullable=false)
     private String customerName;
 
-//    @Column(name = "order_number", nullable = false, unique = true)
-//    private String orderNumber;
-
     @OneToMany(cascade = CascadeType.ALL)
     private List<Sandwich> sandwiches;
 
@@ -48,14 +45,4 @@ public class Order {
         return sandwichTotal + drinkTotal + chipTotal;
     }
 
-/*    @PrePersist
-    public void prePersist() {
-        // auto‐generate a UUID (or any scheme you like) if none supplied:
-        if (orderNumber == null || orderNumber.isBlank()) {
-            orderNumber = UUID.randomUUID().toString();
-        }
-        if (orderTime == null) {
-            orderTime = LocalDateTime.now();
-        }
-    }*/
 }
