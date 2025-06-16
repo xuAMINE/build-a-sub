@@ -4,7 +4,6 @@ Hi# 🥪 DELI-cious
 > *A modern, interactive sandwich ordering web app inspired by your favorite delivery services.*
 
 ---
-
 ## 🎯 Project Overview
 
 DELI-cious is a Spring Boot (Java 21, Spring 3.4.6) web application that simulates an online sandwich ordering experience. It features:
