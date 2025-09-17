@@ -1,7 +1,3 @@
-
-
-
-
 Hi# 🥪 DELI-cious
 
 > *A modern, interactive sandwich ordering web app inspired by your favorite delivery services.*
